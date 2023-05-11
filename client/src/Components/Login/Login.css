@@ -1,3 +1,10 @@
 #login {
     height: 100%;
 }
+#test{
+    width: 35%;
+    margin: 10px auto;
+}
+#test:hover{
+    background: #fffdfd;
+}
