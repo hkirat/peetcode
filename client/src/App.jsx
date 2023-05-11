@@ -1,13 +1,13 @@
 import { BrowserRouter , Routes , Route } from "react-router-dom";
 
-import HomePage from "./Components/HomePage/HomePage"
+import HomePage from "./Components/HomePage/HomePage";
 import AllProblems from "./Components/AllProblems/AllProblems";
 
-import Navbar from "./Constants/Navbar/Navbar"
+import Navbar from "./Constants/Navbar/Navbar";
 import ProblemsPage from "./Components/ProblemsPage/ProblemsPage";
-import Signup from "./Components/Signup/Signup"
-import Login from "./Components/Login/Login"
-import "./App.css"
+import Signup from "./Components/Signup/Signup";
+import Login from "./Components/Login/Login";
+import "./App.css";
 
 function App() {
 

@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react'
-import { Link } from 'react-router-dom'
+import React, {useEffect, useState} from 'react';
+import { Link } from 'react-router-dom';
 
-import "./AllProblems.css"
+import "./AllProblems.css";
 import { backendUrl } from "../../constants.js";
 
 const AllProblemsPage = () => {

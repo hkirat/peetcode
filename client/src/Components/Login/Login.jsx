@@ -1,6 +1,6 @@
-import React from 'react'
+import React from 'react';
 
-import "./Login.css"
+import "./Login.css";
 import {useState} from "react";
 import {backendUrl} from "../../constants.js";
 
