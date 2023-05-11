@@ -2,12 +2,13 @@ import React, {useEffect, useState} from 'react'
 import { Link } from 'react-router-dom'
 
 import "./AllProblems.css"
+import { backendUrl } from "../../constants.js";
 
 const AllProblemsPage = () => {
   const [problems, setProblems] = useState([]);
 
   const init = async () => {
-    const response = await fetch("http://localhost:3000/problems", {
+    const response = await fetch(`${backendUrl}/problems`, {
       method: "GET",
     });
 

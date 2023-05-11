@@ -2,6 +2,7 @@ import React from 'react'
 
 import "./Login.css"
 import {useState} from "react";
+import {backendUrl} from "../../constants.js";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -24,7 +25,7 @@ const Login = () => {
         </div>
 
         <button type="submit" id="test" onClick={async (e) => {
-          const response = await fetch("http://localhost:3000/login", {
+          const response = await fetch(`${backendUrl}/login`, {
             method: "POST",
             body: JSON.stringify({
               email: email,

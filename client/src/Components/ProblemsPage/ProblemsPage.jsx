@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import { useParams } from 'react-router-dom'
 
 import "./ProblemsPage.css"
+import {backendUrl} from "../../constants.js";
 
 
 const ProblemsPage = () => {
@@ -12,7 +13,7 @@ const ProblemsPage = () => {
   const [submission, setSubmission] = useState("");
 
     const init = async () => {
-      const response = await fetch("http://localhost:3000/problem/" + cleanId, {
+      const response = await fetch(`${backendUrl}/problem/` + cleanId, {
         method: "GET",
       });
 
@@ -55,7 +56,7 @@ const ProblemsPage = () => {
               <div className='code-form'>
                 <textarea onChange={(e) => setSubmission(e.target.value)} name="SolvedCode" onKeyDown={ (event) => handleKey(event) }></textarea>
                 <button type="submit" id="submit" onClick={async () => {
-                  const response = await fetch("http://localhost:3000/submission", {
+                  const response = await fetch(`${backendUrl}/submission`, {
                     method: "POST",
                     headers: {
                       "authorization": localStorage.getItem("token")
