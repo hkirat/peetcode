@@ -28,7 +28,7 @@ const Signup = () => {
 					<label htmlFor="password">Password: </label>
 					<input
 						onChange={(e) => setPassword(e.target.value)}
-						type="text"
+            type='password'
 						name="password"
 						placeholder="Your Password"
 					/>
