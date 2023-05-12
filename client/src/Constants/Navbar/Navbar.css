@@ -1,7 +1,11 @@
 .logo-box {
-    margin-right: 2rem;
+	margin-right: 2rem;
 }
 
 .nav-options {
-    margin-right: 2rem;
+	margin-right: 2rem;
+}
+
+.hidden {
+	display: none;
 }
