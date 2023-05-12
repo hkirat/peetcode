@@ -200,9 +200,7 @@ app.post("/login", (req, res) => {
       id: user.id
     }, JWT_SECRET);
 
-
-    return res.json({token});
-
+    return res.json({token , msg: "Successfully logged in"});
 });
 
 app.listen(port, () => {

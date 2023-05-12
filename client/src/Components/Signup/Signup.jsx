@@ -5,10 +5,12 @@ import { backendUrl } from "../../constants.js";
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [UserMsg, setUserMsg] = useState("") ;
 
   return (
     <div id='signup' className='flex-col'>
       <h1>Signup</h1>
+      <p>{UserMsg}</p>
       <div className='signup-form'>
         <div className='subform'>
           <label htmlFor='email'>Email: </label>
@@ -36,8 +38,12 @@ const Signup = () => {
           type='submit'
           id='test'
           onClick={async (e) => {
+            // change backendUrl to localhost:3000 for development
             const response = await fetch(`${backendUrl}/signup`, {
               method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
               body: JSON.stringify({
                 email: email,
                 password: password,
@@ -45,7 +51,7 @@ const Signup = () => {
             });
 
             const json = await response.json();
-            console.log(json);
+            setUserMsg(json.msg) ;
           }}
         >
           SIGNUP

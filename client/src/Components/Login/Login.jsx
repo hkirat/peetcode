@@ -7,10 +7,12 @@ import {backendUrl} from "../../constants.js";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [UserMsg, setUserMsg] = useState('');
 
   return (
     <div id="login" className='flex-col'>
       <h1>Login</h1>
+      <p>{UserMsg}</p>
       <div className='signup-form'>
         <div className='subform'>
           <label htmlFor="email">Email: </label>
@@ -27,6 +29,9 @@ const Login = () => {
         <button type="submit" id="test" onClick={async (e) => {
           const response = await fetch(`${backendUrl}/login`, {
             method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
             body: JSON.stringify({
               email: email,
               password: password
@@ -34,6 +39,7 @@ const Login = () => {
           });
 
           const json = await response.json();
+          setUserMsg(json.msg);
           localStorage.setItem("token", json.token);
         }}>Login</button>
       </div>
