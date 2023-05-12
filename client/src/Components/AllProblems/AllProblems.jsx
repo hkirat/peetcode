@@ -21,7 +21,7 @@ const AllProblemsPage = () => {
   }, []);
 
   return (
-    <div id="allproblems">
+    <div id="allproblems" className='py-9 px-8'>
       <table>
         <tbody>
 
@@ -32,7 +32,7 @@ const AllProblemsPage = () => {
           </tr>
 
           {problems.map((prob,index) => (
-            <tr>
+            <tr className='hover:bg-stone-100 hover:drop-shadow-md'>
               <Link to={`/problems/:${prob.problemId}`}>
                 <td>{prob.title}</td>
               </Link>

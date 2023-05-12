@@ -53,7 +53,7 @@ const ProblemsPage = () => {
             </div>
             <div className="code">
               <h1>Code Here</h1>
-              <div className='code-form'>
+              <div className='code-form border-2 rounded border-stone-700'>
                 <textarea onChange={(e) => setSubmission(e.target.value)} name="SolvedCode" onKeyDown={ (event) => handleKey(event) }></textarea>
                 <button type="submit" id="submit" onClick={async () => {
                   const response = await fetch(`${backendUrl}/submission`, {
