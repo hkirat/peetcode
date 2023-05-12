@@ -27,3 +27,10 @@
     right: 100px;
     padding: 0.3rem;
 }
+#test{
+    width: 35%;
+    margin: 10px auto;
+}
+#test:hover{
+    background: #fffdfd;
+}
