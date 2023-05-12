@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const port = 3000
+const port = 8080
 var jwt = require('jsonwebtoken');
 const { auth } = require("./middleware");
 let USER_ID_COUNTER = 1;
@@ -167,6 +167,7 @@ app.post("/submission", auth, (req, res) => {
 })
 
 app.post("/signup", (req, res) => {
+    console.log(req.body)
     const email = req.body.email;
     const password = req.body.password;
     if (USERS.find(x => x.email === email)) {
