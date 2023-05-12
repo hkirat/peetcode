@@ -21,7 +21,7 @@ const AllProblemsPage = () => {
   }, []);
 
   return (
-    <div id="allproblems" className='py-9 px-8'>
+    <div id="allproblems" className='py-9 md:px-8 pl-4'>
       <table>
         <tbody>
 
