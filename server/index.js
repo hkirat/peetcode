@@ -6,6 +6,9 @@ const { auth } = require("./middleware");
 let USER_ID_COUNTER = 1;
 const USERS = [];
 const JWT_SECRET = "secret";
+const bodyParser = require("body-parser");
+var jsonParser = bodyParser.json();
+var urlencodedParser = bodyParser.urlencoded({ extended: false });
 const cors = require("cors");
 const { default: mongoose } = require("mongoose");
 const mongodbURI = require("./constants");
@@ -13,7 +16,7 @@ const ProblemsModel = require("./models/Problems");
 const UserModel = require("./models/User");
 const SubmissionsModel = require("./models/Submissions");
 app.use(cors());
-app.use(express.json());
+app.use(jsonParser);
 
 app.get("/", (req, res) => {
 	res.json({
@@ -139,6 +142,122 @@ app.post("/login", async (req, res) => {
 		console.error(err);
 		res.status(500).json({ error: "Server error" });
 	}
+  
+app.get("/", (req, res) => {
+  res.json({
+    msg: "hello world",
+  });
+});
+
+app.get("/problems", (req, res) => {
+  const filteredProblems = PROBLEMS.map((x) => ({
+    problemId: x.problemId,
+    difficulty: x.difficulty,
+    acceptance: x.acceptance,
+    title: x.title,
+  }));
+
+  res.json({
+    problems: filteredProblems,
+  });
+});
+
+app.get("/problem/:id", (req, res) => {
+  const id = req.params.id;
+
+  const problem = PROBLEMS.find((x) => x.problemId === id);
+
+  if (!problem) {
+    return res.status(411).json({});
+  }
+
+  res.json({
+    problem,
+  });
+});
+
+app.get("/me", auth, (req, res) => {
+  const user = USERS.find((x) => x.id === req.userId);
+  res.json({ email: user.email, id: user.id });
+});
+
+app.get("/submissions/:problemId", auth, (req, res) => {
+  const problemId = req.params.problemId;
+  const submissions = SUBMISSIONS.filter(
+    (x) => x.problemId === problemId && x.userId === req.userId
+  );
+  res.json({
+    submissions,
+  });
+});
+
+app.post("/submission", auth, (req, res) => {
+  const isCorrect = Math.random() < 0.5;
+  const problemId = req.body.problemId;
+  const submission = req.body.submission;
+
+  if (isCorrect) {
+    SUBMISSIONS.push({
+      submission,
+      problemId,
+      userId: req.userId,
+      status: "AC",
+    });
+    return res.json({
+      status: "AC",
+    });
+  } else {
+    SUBMISSIONS.push({
+      submission,
+      problemId,
+      userId: req.userId,
+      status: "WA",
+    });
+    return res.json({
+      status: "WA",
+    });
+  }
+});
+
+app.post("/signup", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  if (USERS.find((x) => x.email === email)) {
+    return res.status(403).json({ msg: "Email already exists" });
+  }
+
+  USERS.push({
+    email,
+    password,
+    id: USER_ID_COUNTER++,
+  });
+
+  return res.json({
+    msg: "Success",
+  });
+});
+
+app.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const user = USERS.find((x) => x.email === email);
+
+  if (!user) {
+    return res.status(403).json({ msg: "User not found" });
+  }
+
+  if (user.password !== password) {
+    return res.status(403).json({ msg: "Incorrect password" });
+  }
+
+  const token = jwt.sign(
+    {
+      id: user.id,
+    },
+    JWT_SECRET
+  );
+
+  return res.json({ token });
 });
 
 mongoose
