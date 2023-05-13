@@ -8,9 +8,11 @@ const Navbar1 = () => {
   return (
     <div id='navbar-main' className='flex-row'>
       <Link to={'/'}>
-        <div className="logo-box flex-row">
-          <img className='logo' src="https://user-images.githubusercontent.com/63964149/152531278-5e01909d-0c2e-412a-8acc-4a06863c244d.png" alt="logo" />
-          <p>NeetCode</p>
+
+        <div className="logo-box flex-row"> 
+          <img className='logo' src="https://user-images.githubusercontent.com/63964149/152531278-5e01909d-0c2e-412a-8acc-4a06863c244d.png" alt="logo" /> 
+          <p>PeetCode</p>
+
         </div>
       </Link>
       <div className="nav-options">
@@ -25,6 +27,7 @@ const Navbar1 = () => {
     </div>
   )
 }
+
 
 // new nav bar
 const Navbar = () => {
@@ -68,4 +71,6 @@ const Navbar = () => {
   )
 }
 
+
 export default Navbar
+
