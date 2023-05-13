@@ -10,90 +10,139 @@ const bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 const cors = require("cors");
+const { default: mongoose } = require("mongoose");
+const mongodbURI = require("./constants");
+const ProblemsModel = require("./models/Problems");
+const UserModel = require("./models/User");
+const SubmissionsModel = require("./models/Submissions");
 app.use(cors());
 app.use(jsonParser);
 
-const PROBLEMS = [
-  {
-    problemId: "1",
-    title: "401. Bitwise AND of Numbers Range",
-    difficulty: "Medium",
-    acceptance: "42%",
-    description:
-      "Given two integers left and right that represent the range [left, right], return the bitwise AND of all numbers in this range, inclusive.",
-    exampleIn: "left = 5, right = 7",
-    exampleOut: "4",
-  },
-  {
-    problemId: "2",
-    title: "205. Add two numbers",
-    difficulty: "Medium",
-    acceptance: "41%",
-    description:
-      "Given two numbers, add them and return them in integer range. use MOD=1e9+7",
-    exampleIn: "a = 100 , b = 200",
-    exampleOut: "300",
-  },
-  {
-    problemId: "3",
-    title: "202. Happy Number",
-    difficulty: "Easy",
-    acceptance: "54.9%",
-    description: "Write an algorithm to determine if a number n is happy.",
-    exampleIn: "n = 19",
-    exampleOut: "true",
-  },
-  {
-    problemId: "4",
-    title: "203. Remove Linked List Elements",
-    difficulty: "Hard",
-    acceptance: "42%",
-    description: "Given number k , removed kth element",
-    exampleIn: "list: 1->2->3 , k=2",
-    exampleOut: "1->3",
-  },
-  {
-    problemId: "5",
-    title: "201. Bitwise AND of Numbers Range",
-    difficulty: "Medium",
-    acceptance: "42%",
-    description:
-      "Given two integers left and right that represent the range [left, right], return the bitwise AND of all numbers in this range, inclusive.",
-    exampleIn: "left = 5, right = 7",
-    exampleOut: "4",
-  },
-  {
-    problemId: "6",
-    title: "205. Add two numbers",
-    difficulty: "Medium",
-    acceptance: "41%",
-    description:
-      "Given two numbers, add them and return them in integer range. use MOD=1e9+7",
-    exampleIn: "a = 100 , b = 200",
-    exampleOut: "300",
-  },
-  {
-    problemId: "7",
-    title: "202. Happy Number",
-    difficulty: "Easy",
-    acceptance: "54.9%",
-    description: "Write an algorithm to determine if a number n is happy.",
-    exampleIn: "n = 19",
-    exampleOut: "true",
-  },
-  {
-    problemId: "8",
-    title: "203. Remove Linked List Elements",
-    difficulty: "Hard",
-    acceptance: "42%",
-    description: "Given number k , removed kth element",
-    exampleIn: "list: 1->2->3 , k=2",
-    exampleOut: "1->3",
-  },
-];
+app.get("/", (req, res) => {
+	res.json({
+		msg: "hello world",
+	});
+});
 
-const SUBMISSIONS = [];
+app.get("/problems", async (req, res) => {
+	const problems = await ProblemsModel.find();
 
+	res.json({
+		problems: problems,
+	});
+});
+
+app.get("/problem/:id", async (req, res) => {
+	const id = req.params.id;
+
+	const problem = await ProblemsModel.findOne({ problemId: id });
+
+	if (!problem) {
+		return res.status(404).json({ error: "Problem Not Found" });
+	}
+
+	res.json({
+		problem,
+	});
+});
+
+app.get("/me", auth, async (req, res) => {
+	const user = await UserModel.findOne({ userId: req.userId });
+	res.json({ user });
+});
+
+app.get("/submissions/:problemId", auth, async (req, res) => {
+	const problemId = req.params.problemId;
+	const submissions = await SubmissionsModel.find({
+		problemId: problemId,
+		userId: req.userId,
+	});
+	res.json({
+		submissions,
+	});
+});
+
+app.post("/submission", auth, async (req, res) => {
+	const isCorrect = Math.random() < 0.5;
+	const { problemId, submission } = req.body;
+	let status = isCorrect ? "AC" : "WA";
+
+	const newSubmission = new SubmissionsModel({
+		submission: submission,
+		problemId: problemId,
+		userId: req.userId,
+		status: status,
+	});
+
+	await newSubmission.save();
+	return res.json({
+		status: status,
+	});
+});
+
+app.post("/signup", async (req, res) => {
+	console.log(req.body);
+	try {
+		const existingEmail = await UserModel.findOne({
+			email: req.body.email,
+		});
+		if (existingEmail) {
+			return res.status(409).json({ message: "Email already exists!" });
+		}
+
+		const newUser = new UserModel({
+			email: req.body.email,
+			password: req.body.password,
+		});
+
+		await newUser.save();
+
+		console.log("User created!");
+		console.log(newUser.toJSON());
+		return res.json({
+			msg: "Success",
+		});
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: "Server error" });
+	}
+});
+
+app.post("/login", async (req, res) => {
+	console.log(req.body);
+	try {
+		const email = req.body.email;
+		const password = req.body.password;
+		const user = await UserModel.findOne({
+			name: req.body.username,
+		});
+		if (!user) {
+			return res.status(403).json({ msg: "User not found" });
+		}
+
+		const isMatch = await user.comparePassword(req.body.password);
+		if (!isMatch) {
+			return res.status(403).json({ msg: "Incorrect password" });
+		}
+
+		const token = jwt.sign(
+			{
+				id: user.userId,
+			},
+			JWT_SECRET
+		);
+
+		console.log("User logged in!");
+		console.log(req.body.username);
+		res.status(200).json({
+			message: "Logged in successfully!",
+			token: token,
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: "Server error" });
+	}
+  
 app.get("/", (req, res) => {
   res.json({
     msg: "hello world",
@@ -211,6 +260,15 @@ app.post("/login", (req, res) => {
   return res.json({ token });
 });
 
+mongoose
+	.connect(mongodbURI)
+	.then(() => {
+		console.log("Connected to MongoDB");
+	})
+	.catch((err) => {
+		console.log("ERROR: " + err);
+	});
+
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+	console.log(`Example app listening on port ${port}`);
 });
