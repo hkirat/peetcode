@@ -10,8 +10,8 @@ const Login = () => {
 
   return (
     <div id="login" className='flex-col'>
-      <h1>Login</h1>
-      <div className='signup-form'>
+      <h1 className='text-3xl'>Login</h1>
+      <div className='signup-form mt-4'>
         <div className='subform'>
           <label htmlFor="email">Email: </label>
           <input onChange={(e) => {

@@ -1,7 +1,9 @@
+
 const express = require("express");
 const app = express();
 const port = 3000;
 var jwt = require("jsonwebtoken");
+
 const { auth } = require("./middleware");
 let USER_ID_COUNTER = 1;
 const USERS = [];
@@ -143,6 +145,46 @@ app.get("/submissions/:problemId", auth, (req, res) => {
 });
 
 app.post("/submission", auth, (req, res) => {
+
+    const isCorrect = Math.random() < 0.5;
+    const problemId = req.body.problemId;
+    const submission = req.body.submission;
+
+    if (isCorrect) {
+        SUBMISSIONS.push({
+            submission,
+            problemId,
+            userId: req.userId,
+            status: "AC"
+        })
+        return res.json({
+            status: "AC"
+        })
+    } else {
+
+        SUBMISSIONS.push({
+            submission,
+            problemId,
+            userId: req.userId,
+            status: "WA"
+        })
+        return res.json({
+            status: "WA"
+        })
+    }
+})
+
+app.post("/signup", (req, res) => {
+    console.log(req.body)
+    const email = req.body.email;
+    const password = req.body.password;
+    if (USERS.find(x => x.email === email)) {
+        return res.status(403).json({msg: "Email already exists"});
+    }
+
+    USERS.push({
+        email, password, id: USER_ID_COUNTER++
+   })
   const isCorrect = Math.random() < 0.5;
   const problemId = req.body.problemId;
   const submission = req.body.submission;
@@ -163,6 +205,7 @@ app.post("/submission", auth, (req, res) => {
       problemId,
       userId: req.userId,
       status: "WA",
+
     });
     return res.json({
       status: "WA",

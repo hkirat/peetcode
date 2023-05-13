@@ -8,8 +8,8 @@ const Signup = () => {
 
   return (
     <div id='signup' className='flex-col'>
-      <h1>Signup</h1>
-      <div className='signup-form'>
+      <h1 className="text-3xl">Signup</h1>
+      <div className='signup-form mt-4'>
         <div className='subform'>
           <label htmlFor='email'>Email: </label>
           <input
