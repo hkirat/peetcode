@@ -1,1 +1,1 @@
-export const backendUrl = "https://api.peetcode.com";
+export const backendUrl = "http://127.0.0.1:3000";
