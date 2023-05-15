@@ -20,13 +20,21 @@ app.use(jsonParser);
 const PROBLEMS = [
   {
     problemId: "1",
-    title: "401. Bitwise AND of Numbers Range",
-    difficulty: "Medium",
-    acceptance: "42%",
-    description:
-      "Given two integers left and right that represent the range [left, right], return the bitwise AND of all numbers in this range, inclusive.",
-    exampleIn: "left = 5, right = 7",
-    exampleOut: "4",
+    title: "101",
+    difficulty: "Easy",
+    acceptance: "92%",
+    description: "What is the first three digit number.",
+    exampleIn: "NA",
+    exampleOut: "NA",
+  },
+  {
+    problemId: "2",
+    title: "102",
+    difficulty: "Easy",
+    acceptance: "98%",
+    description: "What is the number after 199.",
+    exampleIn: "NA",
+    exampleOut: "NA",
   },
 ];
 
@@ -67,7 +75,7 @@ app.get("/problem/:id", (req, res) => {
 
 app.get("/me", auth, (req, res) => {
   const user = USERS.find((x) => x.id === req.userId);
-  res.json({ user });
+  res.json({ email: user.email, id: user.id });
 });
 
 app.get("/submissions/:problemId", auth, (req, res) => {
@@ -84,44 +92,43 @@ const rabbitMQClient = new RabbitMQClient();
 
 app.post("/submission", auth, async (req, res) => {
   console.log(req.body);
-  const response = await rabbitMQClient.produce(req.body);
-  res.send({ response });
+  // res.send({ response });
   // const isCorrect = Math.random() < 0.5;
-  // const problemId = req.body.problemId;
-  // const submission = req.body.submission;
+  const problemId = req.body.problemId;
+  const submission = req.body.submission;
   // console.log("[Server] The body is: ", req.body);
-  // const newSubmission = new Submission(1, problemId, submission);
-  // console.log("Sending submission to sender");
-  // try {
-  //   const reply = await addToQueue(newSubmission);
-  //   const replyJSON = JSON.parse(reply);
-  //   if (replyJSON.status) {
-  //     SUBMISSIONS.push({
-  //       submission,
-  //       problemId,
-  //       userId: req.userId,
-  //       status: "AC",
-  //     });
-  //     res.json({
-  //       status: "AC",
-  //     });
-  //   } else {
-  //     SUBMISSIONS.push({
-  //       submission,
-  //       problemId,
-  //       userId: req.userId,
-  //       status: "WA",
-  //       error: replyJSON.error,
-  //     });
-  //     res.json({
-  //       status: "WA",
-  //       error: replyJSON.error,
-  //     });
-  //   }
-  // } catch (error) {
-  //   console.log("Error: ", error);
-  //   res.send(JSON.parse(error));
-  // }
+  const newSubmission = new Submission(1, problemId, submission);
+  console.log("Sending submission to sender");
+  try {
+    const reply = await rabbitMQClient.produce(req.body);
+    console.log("Inside server: ", reply);
+    if (reply.status) {
+      SUBMISSIONS.push({
+        submission,
+        problemId,
+        userId: req.userId,
+        status: "AC",
+      });
+      res.json({
+        status: "AC",
+      });
+    } else {
+      SUBMISSIONS.push({
+        submission,
+        problemId,
+        userId: req.userId,
+        status: "WA",
+        error: reply.error,
+      });
+      res.json({
+        status: "WA",
+        error: reply.error,
+      });
+    }
+  } catch (error) {
+    console.log("Error: ", error);
+    res.send(JSON.parse(error));
+  }
 });
 
 app.post("/signup", (req, res) => {

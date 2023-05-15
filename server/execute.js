@@ -5,6 +5,18 @@ const DOCKER_IMAGE = require("./utils/constants.js");
 
 const docker = new Docker();
 
+function timeout(promise) {
+  let timeoutId;
+  const timeoutProise = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => {
+      clearTimeout(timeoutId);
+      reject(new Error("timeout"));
+    }, 5000);
+  });
+
+  return Promise.race([promise, timeoutProise]);
+}
+
 async function executeCommand(command, container) {
   // creating the command and listening to the stream
   let exec = await container.exec({ Cmd: command, AttachStdout: true, AttachStderr: true });
@@ -56,7 +68,23 @@ async function getContainer(container, newlyCreatedContainers) {
   return container;
 }
 
-async function executeCode(submission, filename) {
+async function stopContainer(container, newlyCreatedContainers) {
+  try {
+    await container.stop({ force: true });
+  } catch (error) {
+    console.log("Error stopping container: ", error);
+  }
+
+  // deleting the newly created container
+  const index = newlyCreatedContainers.indexOf(container.id);
+  if (index != -1) {
+    // means this container was newly created
+    newlyCreatedContainers.splice(index, 1);
+    await container.remove();
+  }
+}
+
+async function executeCode(submission, filename, problemId) {
   let container;
   console.log("Submission is: ", submission);
   console.log("File name is: ", filename);
@@ -89,21 +117,35 @@ async function executeCode(submission, filename) {
     const execCommand = [
       "sh",
       "-c",
-      `g++ -o main ./submission/${filename}.cpp && RESULT=$(./main) && ./main`,
+      `g++ -o main ./submission/${filename}.cpp && RESULT=$(./main) && rm ./submission/${filename}.cpp && ./main`,
     ];
-    const output = await executeCommand(execCommand, container);
+
+    let result;
+    try {
+      result = await timeout(executeCommand(execCommand, container));
+      // const output = await executeCommand(execCommand, container);
+      console.log("Try result is: ", result);
+    } catch (error) {
+      console.log("Catch error async timeout");
+      try {
+        await container.stop({ force: true });
+      } catch (error) {
+        console.log("Error in stopping container: ", error);
+      }
+      return "error: Your code took too long to execute";
+    }
 
     // if the output contains error, we just return it
-    if (output.includes("error")) {
+    if (result.includes("error")) {
       console.log("error in the output");
-      return output;
+      return result;
     }
 
     // parsing the output to remove extra ASCII characters
     // DISCLAIMER: For now, we are assuming that the outputs are ONLY numbers
     let actualOutput = "";
-    for (var itr = 0; itr < output.length; itr++) {
-      if (output[itr] >= "0" && output[itr] <= "9") actualOutput += output[itr];
+    for (var itr = 0; itr < result.length; itr++) {
+      if (result[itr] >= "0" && result[itr] <= "9") actualOutput += result[itr];
     }
     actualOutput = parseInt(actualOutput);
 
@@ -111,9 +153,9 @@ async function executeCode(submission, filename) {
     const validateCommand = [
       "sh",
       "-c",
-      `curl --location 'http://localhost:3000/validate' --header 'Content-type: application/json' --data '{"question": 1,  "solution": ${actualOutput}}'`,
+      `curl --location 'http://localhost:3000/validate' --header 'Content-type: application/json' --data '{"question": ${problemId},  "solution": ${actualOutput}}'`,
     ];
-    const result = await executeCommand(validateCommand, container);
+    result = await executeCommand(validateCommand, container);
 
     let status = false;
     if (result.includes("true")) status = true;
@@ -121,23 +163,15 @@ async function executeCode(submission, filename) {
   } catch (error) {
     console.log("Error: ", error);
   } finally {
-    await container.stop({ force: true });
-
-    // deleting the newly created container
-    const index = newlyCreatedContainers.indexOf(container.id);
-    if (index != -1) {
-      // means this container was newly created
-      newlyCreatedContainers.splice(index, 1);
-      await container.remove();
-    }
+    await stopContainer(container, newlyCreatedContainers);
   }
 }
 
-module.exports = async function beginExecution(submission) {
+module.exports = async function beginExecution(submission, problemId) {
   // random file name for each submission to prevent race conditions
   const filename = Math.floor(Math.random() * 1000);
 
-  const result = await executeCode(submission, filename)
+  const result = await executeCode(submission, filename, problemId)
     .then(async (output) => {
       if (typeof output === "string" && output.includes("error")) {
         return {

@@ -17,7 +17,7 @@ module.exports = class Consumer {
           console.log("Missing fields...");
         } else {
           const request = JSON.parse(message.content.toString());
-          const result = await beginExecution(request.submission);
+          const result = await beginExecution(request.submission, request.problemId);
           console.log("Result is: ", result);
           await this.producer.produce(result, correlationId, replyTo);
         }
