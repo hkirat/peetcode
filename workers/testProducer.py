@@ -4,8 +4,8 @@ connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost')
 channel = connection.channel()
 # channel.queue_declare(queue='code_submission_queue')
 message = {
-    "lang": "cpp",
-    "code": "#include <iostream>\nusing namespace std;\nint main(){\nint a,b;\ncin>>a>>b;\ncout<<a+b;\nreturn 0;\n}",
+    "lang": "java",
+    "code": "public class Main {\n  public static void main(String[] args) {\n int a,b; Scanner sc = new Scanner(System.in); a = sc.nextInt(); b = sc.nextInt(); System.out.println(a+b); }\n}",
     "input": "1 2",
     "expected_output": "3",
     "problem_id": 1,
