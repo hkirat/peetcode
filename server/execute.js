@@ -153,7 +153,7 @@ async function executeCode(submission, filename, problemId) {
     const validateCommand = [
       "sh",
       "-c",
-      `curl --location 'http://localhost:3000/validate' --header 'Content-type: application/json' --data '{"question": ${problemId},  "solution": ${actualOutput}}'`,
+      `curl --location 'http://localhost:3001/validate' --header 'Content-type: application/json' --data '{"question": ${problemId},  "solution": ${actualOutput}}'`,
     ];
     result = await executeCommand(validateCommand, container);
 

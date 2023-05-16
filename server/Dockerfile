@@ -1,3 +1,5 @@
+# Dockerfile for the code executor
+
 FROM alpine:latest
 
 RUN apk update && apk add --no-cache build-base
@@ -6,11 +8,10 @@ RUN apk add curl
 
 WORKDIR /app
 
-COPY ./code /app
+COPY ./docker /app
 
 RUN npm install
 
-CMD ["node", "validator.js"]
+EXPOSE 3001
 
-# make sure to create a non-root user with least privileges
-# the files should not be modified; nothing should be created, deleted, read or written
+CMD ["node", "validator.js"]

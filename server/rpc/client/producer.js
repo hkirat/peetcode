@@ -11,7 +11,7 @@ module.exports = class Producer {
   async produceMessage(data) {
     const uuid = crypto.randomUUID();
     console.log(this.replyQueueName, uuid);
-    this.channel.sendToQueue("rpc_queue", Buffer.from(JSON.stringify(data)), {
+    this.channel.sendToQueue("container_queue", Buffer.from(JSON.stringify(data)), {
       replyTo: this.replyQueueName,
       correlationId: uuid,
       expiration: 10,

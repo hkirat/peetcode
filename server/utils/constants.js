@@ -1,2 +1,2 @@
-const DOCKER_IMAGE = "adithyam297/peet";
+const DOCKER_IMAGE = "adithyam297/peet-sandbox";
 module.exports = DOCKER_IMAGE;

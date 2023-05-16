@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "server": "node index.js",
+    "receiver": "cd rpc/server && node server.js",
+    "start": "concurrently 'npm run server' 'npm run receiver'"
   },
   "author": "",
   "license": "ISC",
@@ -12,6 +14,7 @@
     "amqplib": "^0.10.3",
     "axios": "^1.4.0",
     "body-parser": "^1.20.2",
+    "concurrently": "^8.0.1",
     "cors": "^2.8.5",
     "dockerode": "^3.3.5",
     "express": "^4.18.2",

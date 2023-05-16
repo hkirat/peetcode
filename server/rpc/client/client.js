@@ -5,23 +5,37 @@ const EventEmitter = require("events");
 
 module.exports = class RabbitMQClient {
   async initialise() {
-    try {
-      this.connection = await amqp.connect("amqp://localhost");
+    let retryCount = 0;
+    const maxRetries = 10;
+    const delay = 4000; // 4 seconds
+    let connected = false;
 
-      this.producerChannel = await this.connection.createChannel();
-      this.consumerChannel = await this.connection.createChannel();
+    while (!connected && retryCount < maxRetries) {
+      try {
+        console.log("Connecting to RabbitMQ...");
+        this.connection = await amqp.connect("amqp://rabbitmq-service");
 
-      const { queue: replyQueueName } = await this.consumerChannel.assertQueue("", {
-        exclusive: true,
-      });
+        connected = true;
+        console.log("Connected successfully");
 
-      this.eventEmitter = new EventEmitter();
+        this.producerChannel = await this.connection.createChannel();
+        this.consumerChannel = await this.connection.createChannel();
 
-      this.producer = new Producer(this.producerChannel, replyQueueName, this.eventEmitter);
-      this.consumer = new Consumer(this.consumerChannel, replyQueueName, this.eventEmitter);
-      this.consumer.consumeMessages();
-    } catch (error) {
-      console.log("Error in connecting to rabbitMQ...", error);
+        const { queue: replyQueueName } = await this.consumerChannel.assertQueue("", {
+          exclusive: true,
+        });
+
+        this.eventEmitter = new EventEmitter();
+
+        this.producer = new Producer(this.producerChannel, replyQueueName, this.eventEmitter);
+        this.consumer = new Consumer(this.consumerChannel, replyQueueName, this.eventEmitter);
+        this.consumer.consumeMessages();
+      } catch (error) {
+        console.log("Error in connecting to rabbitMQ...", error);
+        retryCount++;
+        console.log("Retrying...");
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
     }
   }
 

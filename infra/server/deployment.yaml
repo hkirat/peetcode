@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peet-server-deployment
+  labels:
+    app: peet-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peet-server
+  template:
+    metadata:
+      labels:
+        app: peet-server
+    spec:
+      containers:
+        - name: peet-server
+          image: adithyam297/peet-server
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: docker-socket
+              mountPath: /var/run/docker.sock
+          resources:
+            limits:
+              cpu: 500m
+            requests:
+              cpu: 200m
+          ports:
+            - containerPort: 3000
+      volumes:
+        - name: docker-socket
+          hostPath:
+            path: /var/run/docker.sock
