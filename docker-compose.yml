@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    restart: always
+#    not necessary to expose ports, because they are already exposed in the image
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+        - common
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 30s
+      retries: 3
+
+  redis:
+    image: redis
+    restart: always
+    networks:
+        - common
+    ports:
+      - "6379:6379"
+    healthcheck:
+        test: ["CMD", "redis-cli", "ping"]
+        interval: 5s
+        timeout: 30s
+        retries: 3
+
+  workers:
+    build:
+      context: ./workers
+      dockerfile: Dockerfile
+    environment:
+        - REDIS_HOST=redis
+        - REDIS_PORT=6379
+        - RABBITMQ_HOST=rabbitmq
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+    networks:
+      - common
+
+
+networks:
+  common:
+    driver: bridge
+
