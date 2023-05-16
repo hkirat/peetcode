@@ -1,5 +1,9 @@
 import os
 import subprocess
+import resource
+import time
+
+USER = "sudo -u peetcode"
 
 ERROR_CODES = {
     '200': 'Success',
@@ -48,6 +52,7 @@ def compile(lang, filename):
         }
 
     command = LANG_COMPILE_MAP[lang] + ' ' + filename
+    command = USER + ' ' + command
 
     stdout = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd)
     if stdout.returncode != 0:
@@ -62,28 +67,54 @@ def compile(lang, filename):
     }
 
 
+def run_with_timeout(command, input, time_limit):
+    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                               stdin=subprocess.PIPE, cwd=cwd)
+    start_time = time.time()
+    while process.poll() is None:
+        if time.time() - start_time > time_limit:
+            process.kill()
+            raise subprocess.TimeoutExpired(command, time_limit)
+
+    stdout, stderr = process.communicate(input=input.encode('utf-8'))
+
+    if process.returncode != 0:
+        error = stderr.decode('utf-8')
+        if "Killed" in error:
+            return {
+                "status": "memory_limit_exceeded",
+                "message": "Memory Limit Exceeded"
+            }
+        if "Resource temporarily unavailable" in error:
+            return {
+                "status": "output_limit_exceeded",
+                "message": "No Fork Bombs >:("
+            }
+        return {
+            "status": "runtime_error",
+            "message": stderr.decode('utf-8')
+        }
+
+    return {
+        "status": "200",
+        "message": stdout.decode('utf-8')
+    }
+
+
 def run(lang, filename, input, time_limit):
     command = LANG_RUN_MAP[lang] + ' ' + filename
+    command = USER + ' ' + command
     input = input if input is not None else ''
 
     try:
-        stdout = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, input=input.encode('utf-8'), timeout=time_limit, cwd=cwd)
+        stdout = run_with_timeout(command, input, time_limit)
     except subprocess.TimeoutExpired:
         return {
             "status": "time_limit_exceeded",
             "message": "Time Limit Exceeded"
         }
 
-    if stdout.returncode != 0:
-        return {
-            "status": "runtime_error",
-            "message": stdout.stderr.decode('utf-8')
-        }
-
-    return {
-        "status": "200",
-        "message": stdout.stdout.decode('utf-8')
-    }
+    return stdout
 
 
 def match_output(output, expected_output):
@@ -92,5 +123,3 @@ def match_output(output, expected_output):
     if output == expected_output:
         return True
     return False
-
-

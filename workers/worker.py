@@ -6,6 +6,7 @@ from RunCode.fs import init, cleanup, TEMP_DIR_PATH
 import json
 import os
 
+TIMEOUT = 2 # seconds
 
 def callback(body):
     body = json.loads(body)
@@ -36,7 +37,7 @@ def callback(body):
         set('submission:' + str(user_id) + ':' + str(problem_id), json.dumps(compile_status))
         return compile_status
 
-    run_status = run(lang, filename, input, 5)
+    run_status = run(lang, filename, input, TIMEOUT)
     if run_status['status'] != '200':
         set('submission:' + str(user_id) + ':' + str(problem_id), json.dumps(run_status))
         return run_status

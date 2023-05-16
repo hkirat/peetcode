@@ -1,4 +1,4 @@
-version: "3.8"
+version: "2.4" #pids_limit are not available in version 3 or higher
 
 services:
   rabbitmq:
@@ -42,9 +42,11 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-
     networks:
       - common
+    pids_limit: 100
+    cpus: 0.5
+    mem_limit: 100m
 
 
 networks:
