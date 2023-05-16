@@ -1,4 +1,4 @@
-# Code Execution service
+    # Code Execution service
 
 ## Architecture
 ![img.png](img.png)
@@ -29,5 +29,11 @@ I have not integrated this with the main project i.e. server and client due to m
 ```bash
 docker-compose up --build
 ```
+
+# How to access saved data
+
+all workers use userid and problemid passed in data to save in redis
+
+default key format is: `submission:<userid>:<problemid>` which can be accessed using redis library in any language
 
 
