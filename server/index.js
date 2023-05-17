@@ -3,92 +3,38 @@ const app = express();
 const port = 3000;
 var jwt = require("jsonwebtoken");
 const { auth } = require("./middleware");
+const axios = require("axios");
 let USER_ID_COUNTER = 1;
 const USERS = [];
 const JWT_SECRET = "secret";
 const bodyParser = require("body-parser");
+const Submission = require("./models/submission.js");
 var jsonParser = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 const cors = require("cors");
+// const addToQueue = require("./queue/send");
+const RabbitMQClient = require("./rpc/client/client");
 app.use(cors());
 app.use(jsonParser);
 
 const PROBLEMS = [
   {
     problemId: "1",
-    title: "401. Bitwise AND of Numbers Range",
-    difficulty: "Medium",
-    acceptance: "42%",
-    description:
-      "Given two integers left and right that represent the range [left, right], return the bitwise AND of all numbers in this range, inclusive.",
-    exampleIn: "left = 5, right = 7",
-    exampleOut: "4",
+    title: "101",
+    difficulty: "Easy",
+    acceptance: "92%",
+    description: "What is the first three digit number.",
+    exampleIn: "NA",
+    exampleOut: "NA",
   },
   {
     problemId: "2",
-    title: "205. Add two numbers",
-    difficulty: "Medium",
-    acceptance: "41%",
-    description:
-      "Given two numbers, add them and return them in integer range. use MOD=1e9+7",
-    exampleIn: "a = 100 , b = 200",
-    exampleOut: "300",
-  },
-  {
-    problemId: "3",
-    title: "202. Happy Number",
+    title: "102",
     difficulty: "Easy",
-    acceptance: "54.9%",
-    description: "Write an algorithm to determine if a number n is happy.",
-    exampleIn: "n = 19",
-    exampleOut: "true",
-  },
-  {
-    problemId: "4",
-    title: "203. Remove Linked List Elements",
-    difficulty: "Hard",
-    acceptance: "42%",
-    description: "Given number k , removed kth element",
-    exampleIn: "list: 1->2->3 , k=2",
-    exampleOut: "1->3",
-  },
-  {
-    problemId: "5",
-    title: "201. Bitwise AND of Numbers Range",
-    difficulty: "Medium",
-    acceptance: "42%",
-    description:
-      "Given two integers left and right that represent the range [left, right], return the bitwise AND of all numbers in this range, inclusive.",
-    exampleIn: "left = 5, right = 7",
-    exampleOut: "4",
-  },
-  {
-    problemId: "6",
-    title: "205. Add two numbers",
-    difficulty: "Medium",
-    acceptance: "41%",
-    description:
-      "Given two numbers, add them and return them in integer range. use MOD=1e9+7",
-    exampleIn: "a = 100 , b = 200",
-    exampleOut: "300",
-  },
-  {
-    problemId: "7",
-    title: "202. Happy Number",
-    difficulty: "Easy",
-    acceptance: "54.9%",
-    description: "Write an algorithm to determine if a number n is happy.",
-    exampleIn: "n = 19",
-    exampleOut: "true",
-  },
-  {
-    problemId: "8",
-    title: "203. Remove Linked List Elements",
-    difficulty: "Hard",
-    acceptance: "42%",
-    description: "Given number k , removed kth element",
-    exampleIn: "list: 1->2->3 , k=2",
-    exampleOut: "1->3",
+    acceptance: "98%",
+    description: "What is the number after 199.",
+    exampleIn: "NA",
+    exampleOut: "NA",
   },
 ];
 
@@ -142,31 +88,46 @@ app.get("/submissions/:problemId", auth, (req, res) => {
   });
 });
 
-app.post("/submission", auth, (req, res) => {
-  const isCorrect = Math.random() < 0.5;
+const rabbitMQClient = new RabbitMQClient();
+
+app.post("/submission", auth, async (req, res) => {
+  console.log(req.body);
+  // res.send({ response });
+  // const isCorrect = Math.random() < 0.5;
   const problemId = req.body.problemId;
   const submission = req.body.submission;
-
-  if (isCorrect) {
-    SUBMISSIONS.push({
-      submission,
-      problemId,
-      userId: req.userId,
-      status: "AC",
-    });
-    return res.json({
-      status: "AC",
-    });
-  } else {
-    SUBMISSIONS.push({
-      submission,
-      problemId,
-      userId: req.userId,
-      status: "WA",
-    });
-    return res.json({
-      status: "WA",
-    });
+  // console.log("[Server] The body is: ", req.body);
+  const newSubmission = new Submission(1, problemId, submission);
+  console.log("Sending submission to sender");
+  try {
+    const reply = await rabbitMQClient.produce(req.body);
+    console.log("Inside server: ", reply);
+    if (reply.status) {
+      SUBMISSIONS.push({
+        submission,
+        problemId,
+        userId: req.userId,
+        status: "AC",
+      });
+      res.json({
+        status: "AC",
+      });
+    } else {
+      SUBMISSIONS.push({
+        submission,
+        problemId,
+        userId: req.userId,
+        status: "WA",
+        error: reply.error,
+      });
+      res.json({
+        status: "WA",
+        error: reply.error,
+      });
+    }
+  } catch (error) {
+    console.log("Error: ", error);
+    res.send(JSON.parse(error));
   }
 });
 
@@ -213,4 +174,5 @@ app.post("/login", (req, res) => {
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
+  rabbitMQClient.initialise();
 });

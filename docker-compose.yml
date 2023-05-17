@@ -1,0 +1,21 @@
+version: "3"
+services:
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  server:
+    build: .
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "3000:3000"
+  sandbox:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: adithyam297/peet
+    ports:
+      - "3001:3001"

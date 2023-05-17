@@ -1,5 +1,6 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import axios from 'axios';
 
 import "./AllProblems.css"
 import { backendUrl } from "../../constants.js";
@@ -8,11 +9,9 @@ const AllProblemsPage = () => {
   const [problems, setProblems] = useState([]);
 
   const init = async () => {
-    const response = await fetch(`${backendUrl}/problems`, {
-      method: "GET",
-    });
+    const response = await axios.get(`${backendUrl}/problems`);
 
-    const json = await response.json();
+    const json = response.data; // Access the response data
     setProblems(json.problems);
   }
 
@@ -31,7 +30,7 @@ const AllProblemsPage = () => {
             <th>Acceptance</th>
           </tr>
 
-          {problems.map((prob,index) => (
+          {problems.map((prob, index) => (
             <tr>
               <Link to={`/problems/:${prob.problemId}`}>
                 <td>{prob.title}</td>

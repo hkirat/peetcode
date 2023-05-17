@@ -7,35 +7,36 @@ const Signup = () => {
   const [password, setPassword] = useState("");
 
   return (
-    <div id='signup' className='flex-col'>
+    <div id="signup" className="flex-col">
       <h1>Signup</h1>
-      <div className='signup-form'>
-        <div className='subform'>
-          <label htmlFor='email'>Email: </label>
+      <div className="signup-form">
+        <div className="subform">
+          <label htmlFor="email">Email: </label>
           <input
             onChange={(e) => {
               setEmail(e.target.value);
             }}
-            type='text'
-            name='email'
-            placeholder='Your Email'
+            type="text"
+            name="email"
+            placeholder="Your Email"
           />
         </div>
 
-        <div className='subform'>
-          <label htmlFor='password'>Password: </label>
+        <div className="subform">
+          <label htmlFor="password">Password: </label>
           <input
             onChange={(e) => setPassword(e.target.value)}
-            type='password'
-            name='password'
-            placeholder='Your Password'
+            type="password"
+            name="password"
+            placeholder="Your Password"
           />
         </div>
 
         <button
-          type='submit'
-          id='test'
+          type="submit"
+          id="test"
           onClick={async (e) => {
+            console.log("Ok, here");
             const response = await fetch(`${backendUrl}/signup`, {
               method: "POST",
               body: JSON.stringify({
