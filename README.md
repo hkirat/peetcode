@@ -36,9 +36,18 @@ The whole backend has been containerised for better scaling, and uses K8s to man
 
 - To run the program, it is expected that RabbitMQ is set up and running on port `5672`.
 - Docker must be installed and running on the system
-- Build the image by running `cd server && docker build . -t <IMAGENAME>`. Make sure you update the image name in the constants file
-- Install the dependencies using `npm install`
-- Run `npm run dev`, which starts up the client, the server and the RabbitMQ receiver.
+- A Kubernetes cluster must also be running on your machine (Minikube or Docker Desktop's Kubernetes)
+- We can just use the startup script `startup.sh` provided to bring up all the necessary components
+- Ensure that the file is executable, and execute it by running `./startup.sh`
+- Since we are using NodePorts, we can access the client and the server from our local machine
+- Visit `localhost:30002` or `<minikube-ip>:30002` depending on how you are running your Kubernetes cluster.
+
+## Explanation
+- All the required services (the backend server, RabbitMQ, and the Sandbox environments) are present as deployments, and have ClusterIP services to access them within cluster
+- The client service has a pod and a NodePort to access it from the outside
+- The service service too has a NodePort so that client can send requests to it from outside the cluster (eg. the browser)
+- The sandbox environment and RabbitMQ pods are inaccessible from the outside
+- The client (`localhost:30002`) sends requests to the server throught the NodePort on `localhost:30001`.
 
 ## Architecture of the backend
 ![archi](https://github.com/Adithya2907/peetcode/assets/56926966/0d875d15-2788-403a-9c29-246d2d31aade)
