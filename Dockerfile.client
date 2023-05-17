@@ -1,0 +1,15 @@
+# Dockerfile for the client
+
+FROM alpine:latest
+
+WORKDIR /app
+
+RUN apk update && apk add --no-cache build-base
+RUN apk add --update nodejs npm
+
+COPY ./client /app
+RUN npm install
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev"]

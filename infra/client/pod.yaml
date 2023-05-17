@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: peet-client
+spec:
+  containers:
+    - name: peet-client
+      image: adithyam297/peet-client

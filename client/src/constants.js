@@ -1,1 +1,1 @@
-export const backendUrl = "http://127.0.0.1:3000";
+export const backendUrl = "peet-server-cluster-ip:3000";
