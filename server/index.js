@@ -213,12 +213,6 @@ app.post("/login", (req, res) => {
   return res.json({ token });
 });
 
-app.get("/all",(req,res)=>{
-  return res.json({
-    user:USERS
-  })
-})
-
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
