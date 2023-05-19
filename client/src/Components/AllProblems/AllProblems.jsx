@@ -32,7 +32,7 @@ const AllProblemsPage = () => {
           </tr>
 
           {problems.map((prob,index) => (
-            <tr>
+            <tr key={prob.problemId}>
               <Link to={`/problems/:${prob.problemId}`}>
                 <td>{prob.title}</td>
               </Link>
