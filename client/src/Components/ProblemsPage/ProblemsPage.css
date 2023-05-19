@@ -41,3 +41,23 @@ button {
 #submit {
     background-color: rgb(68, 207, 68);
 }
+
+#sub-content{
+    padding: 1vh;
+   border : 1px solid black;
+    border-radius: 0.3vw;
+    height: 39vh;
+    width: 100%;
+    overflow-y: scroll;
+}
+#internal{
+    margin : 1%;
+}
+.AC {
+    color: green;
+    font-weight: 900;
+}
+.WA {
+    color: red;
+    font-weight: 900;
+}

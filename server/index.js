@@ -10,7 +10,9 @@ const bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 const cors = require("cors");
-app.use(cors());
+app.use(cors(
+    {origin: "*"}
+));
 app.use(jsonParser);
 
 const PROBLEMS = [
