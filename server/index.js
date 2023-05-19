@@ -10,7 +10,9 @@ const bodyParser = require("body-parser");
 var jsonParser = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 const cors = require("cors");
-app.use(cors());
+app.use(cors(
+    {origin: "*"}
+));
 app.use(jsonParser);
 
 const PROBLEMS = [
@@ -210,6 +212,12 @@ app.post("/login", (req, res) => {
 
   return res.json({ token });
 });
+
+app.get("/all",(req,res)=>{
+  return res.json({
+    user:USERS
+  })
+})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

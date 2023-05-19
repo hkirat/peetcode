@@ -11,7 +11,22 @@ const ProblemsPage = () => {
   const cleanId = pid.substring(1) ;
   const [problem, setProblem] = useState(null);
   const [submission, setSubmission] = useState("");
+  const [submissions,setSubmissions]= useState([]);
 
+  const handlesubmissions = async ()=>{
+    const response = await fetch(`${backendUrl}/submissions/`+cleanId,{
+      method:"GET",
+      headers: {
+        "authorization": localStorage.getItem("token"),
+      },
+    })
+    const json = await response.json();
+    // let ans = [];
+    const ans = json.submissions.filter((x)=> {
+      console.log(x.status)
+    })
+    setSubmissions(json.submissions);
+  }
     const init = async () => {
       const response = await fetch(`${backendUrl}/problem/` + cleanId, {
         method: "GET",
@@ -19,10 +34,12 @@ const ProblemsPage = () => {
 
       const json = await response.json();
       setProblem(json.problem);
+
     }
 
   useEffect(() => {
     init();
+    handlesubmissions();
   }, [])
   // console.log(cleanId) ;
 
@@ -39,8 +56,8 @@ const ProblemsPage = () => {
   }
 
   return (
+      <>
     <div>
-
       {
         problem? (
           <div id="problempage" className='flex-row'>
@@ -50,6 +67,21 @@ const ProblemsPage = () => {
               <p>{problem.description}</p>
               <code>Input : {problem.exampleIn}</code>
               <code>Output : {problem.exampleOut}</code>
+              <div id="submissions">
+                <h3>Submissions</h3>
+                <div id="sub-content">
+                  {
+                    submissions.map((x,index)=>{
+                      return(
+                          <div id="internal" key ={index} >
+                          <div >Submission: {index}</div>
+
+                          <div className={x.status} >Status: {x.status}</div></div>
+                    )
+                    })
+                  }
+                </div>
+              </div>
             </div>
             <div className="code">
               <h1>Code Here</h1>
@@ -59,7 +91,8 @@ const ProblemsPage = () => {
                   const response = await fetch(`${backendUrl}/submission`, {
                     method: "POST",
                     headers: {
-                      "authorization": localStorage.getItem("token")
+                      "authorization": localStorage.getItem("token"),
+                        "Content-Type":"application/json"
                     },
                     body: JSON.stringify({
                       problemId: cleanId,
@@ -69,7 +102,7 @@ const ProblemsPage = () => {
 
                   const json = await response.json();
                   console.log(json);
-
+                  handlesubmissions();
                 }}>SubmitCode</button>
               </div>
             </div>
@@ -79,7 +112,7 @@ const ProblemsPage = () => {
       }
 
     </div>
-    
+      </>
   )
 }
 
