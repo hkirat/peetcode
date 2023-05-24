@@ -33,3 +33,27 @@ exports.signup = async (req, res) => {
 		_createUser,
 	});
 };
+
+exports.signin = async (req, res) => {
+	const { email, password } = req.body;
+	const UserExist = await FindUser('', email);
+	if (!UserExist) {
+		return res.status(400).json({
+			message: 'User dose not exists',
+		});
+	}
+	const isPassword = await UserExist.authenticate(password);
+	if (isPassword) {
+		const token = await GenerateSignature({ _id: UserExist._id, role: UserExist.role });
+		const { _id, email, role, fullName, userToken } = UserExist;
+		res.cookie('token', token, { expiresIn: '10d' });
+		res.status(200).json({
+			token,
+			user: { _id, fullName, userToken, email, role },
+		});
+	} else {
+		return res.status(400).json({
+			message: 'Invalid password',
+		});
+	}
+};
