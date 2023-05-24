@@ -22,4 +22,4 @@ const GenerateUserToken = (firstName, lastName, role) => {
 
 	return first_elem + '_' + second_elem + '_' + third_elem;
 };
-module.exports = { FindUser, GenerateUserToken, isUserTheOwner };
+module.exports = { FindUser, GenerateUserToken };
