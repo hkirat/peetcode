@@ -5,12 +5,14 @@ var jwt = require('jsonwebtoken');
 module.exports = {
     auth: (req, res, next) => {
         const authHeader = req.headers["authorization"];
-        if (!authHeader) {
-            return res.status(403).json({msg: "Missing auth header"});
+        // console.log("auth header is " + authHeader + " " + typeof(authHeader));
+        if (!authHeader || authHeader === "null") {
+            return res.json({msg: "Missing auth header"});
         }
+        // const decoded = null;
         const decoded = jwt.verify(authHeader, JWT_SECRET);
-        if (decoded && decoded.id) {
-            req.userId = decoded.id;
+        if (decoded && decoded.email) {
+            req.email = decoded.email;
             next()
         } else {
             return res.status(403).json({msg: "Incorrect token"});
