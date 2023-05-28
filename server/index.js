@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const authRouter = require("./src/routes/auth.routes");
 const submissionRouter = require("./src/routes/submission.routes");
 const questionRouter = require("./src/routes/question.routes");
@@ -9,6 +10,7 @@ const errorHandler = require("./src/middlewares/errorHandler.middleware");
 const responseHandler = require("./src/middlewares/responseHandler.middleware");
 const port = 3001;
 
+app.use(cors());
 app.use(express.json());
 app.use(loggingMiddleware);
 app.use(responseHandler);
