@@ -8,3 +8,8 @@ npm install
 npm install uuid@latest
 pm2 start index.js
 ```
+
+Added a select element to let users select their language (currently only python and c++)
+
+https://github.com/hridyeshK/peetcode/assets/101424471/2ea6a63f-0112-4192-ae5f-5ee8f788f2cf
+
