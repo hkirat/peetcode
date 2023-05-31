@@ -1,4 +1,6 @@
 const express = require("express");
+const { execFile } = require("child_process");
+const fs = require("fs");
 const app = express();
 const port = 3000;
 var jwt = require("jsonwebtoken");
@@ -143,31 +145,57 @@ app.get("/submissions/:problemId", auth, (req, res) => {
 });
 
 app.post("/submission", auth, (req, res) => {
-  const isCorrect = Math.random() < 0.5;
   const problemId = req.body.problemId;
   const submission = req.body.submission;
+  const language = req.body.language;
 
-  if (isCorrect) {
-    SUBMISSIONS.push({
-      submission,
-      problemId,
-      userId: req.userId,
-      status: "AC",
-    });
-    return res.json({
-      status: "AC",
-    });
+  let command, args;
+
+  if (language === "python") {
+    command = "python";
+    args = ["-c", submission];
+  } else if (language === "cpp") {
+    const codeFilePath = `./code.${language}`;
+    fs.writeFileSync(codeFilePath, submission);
+    command = "g++";
+    args = [codeFilePath, "-o", "./code.out"];
   } else {
-    SUBMISSIONS.push({
-      submission,
-      problemId,
-      userId: req.userId,
-      status: "WA",
-    });
-    return res.json({
-      status: "WA",
-    });
+    return res.status(400).json({ error: "Unsupported language" });
   }
+
+  execFile(command, args, (error, stdout, stderr) => {
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ status: "Runtime error" });
+    }
+
+    if (language === "cpp") {
+      execFile("./code.out", (error, stdout, stderr) => {
+        if (error) {
+          console.error(error);
+          return res.status(500).json({ status: "Runtime error" });
+        }
+
+        const output = stdout.trim().replace(/\r\n/g, "\n");
+        const problem = PROBLEMS.find((x) => x.problemId === problemId);
+
+        if (output === problem.exampleOut) {
+          return res.json({ status: "AC" });
+        } else {
+          return res.json({ status: "WA" });
+        }
+      });
+    } else {
+      const output = stdout.trim().replace(/\r\n/g, "\n");
+      const problem = PROBLEMS.find((x) => x.problemId === problemId);
+
+      if (output === problem.exampleOut) {
+        return res.json({ status: "AC" });
+      } else {
+        return res.json({ status: "WA" });
+      }
+    }
+  });
 });
 
 app.post("/signup", (req, res) => {
