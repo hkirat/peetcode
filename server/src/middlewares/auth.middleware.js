@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { JWT_SECRET_KEY } = require("../lib/constants");
 
 const authMiddleware = (req, _res, next) => {
   try {
@@ -13,8 +14,7 @@ const authMiddleware = (req, _res, next) => {
     }
 
     // Verify the token
-    const secretKey = "my-secret-key";
-    const decodedToken = jwt.verify(token, secretKey);
+    const decodedToken = jwt.verify(token, JWT_SECRET_KEY);
     // Attach the decoded token to the request object for further use
     req.user = decodedToken;
 

@@ -1,4 +1,7 @@
 const { SUBMISSION } = require("../database/data");
+var amqp = require("amqplib/callback_api");
+const { sendMessageToQueue } = require("../lib/utils");
+const { RABBIT_MQ_QUEUE } = require("../lib/constants");
 
 const getSubmissionsOfProblem = async (req, res) => {
   // return the users submissions for this problem
@@ -21,17 +24,18 @@ const addSubmissionToProblem = async (req, res, next) => {
       err.statusCode = 400;
       throw err;
     }
-    const status = Math.random() > 0.5 ? "Accepted" : "Wrong Answer";
+
     const submission = {
       id: SUBMISSION.length,
       problemId,
       code,
-      status,
+      status: "pending",
       language,
       submittedBy: req.user.id,
       submittedAt: new Date(),
     };
     SUBMISSION.push(submission);
+    sendMessageToQueue(RABBIT_MQ_QUEUE, JSON.stringify(submission));
     res.customJson(submission, "Submission added successfully", 200);
   } catch (error) {
     next(error);

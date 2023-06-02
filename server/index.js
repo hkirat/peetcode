@@ -8,6 +8,11 @@ const questionRouter = require("./src/routes/question.routes");
 const loggingMiddleware = require("./src/middlewares/logging.middleware.js");
 const errorHandler = require("./src/middlewares/errorHandler.middleware");
 const responseHandler = require("./src/middlewares/responseHandler.middleware");
+const { RABBIT_MQ_QUEUE } = require("./src/lib/constants");
+const {
+  receiveMessageFromQueue,
+  handleSubmissionFromQueue,
+} = require("./src/lib/utils");
 const port = 3001;
 
 app.use(cors());
@@ -20,7 +25,8 @@ app.use("/submissions", submissionRouter);
 app.use("/questions", questionRouter);
 
 app.use(errorHandler);
+receiveMessageFromQueue(RABBIT_MQ_QUEUE, handleSubmissionFromQueue);
 
 app.listen(port, function () {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`listening on port ${port}`);
 });

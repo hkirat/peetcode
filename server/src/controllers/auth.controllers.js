@@ -1,11 +1,7 @@
 const { hash, compare } = require("bcrypt");
 const { USERS } = require("../database/data");
 const jwt = require("jsonwebtoken");
-
-const secretKey = "my-secret-key";
-const options = {
-  expiresIn: "1h",
-};
+const { JWT_SECRET_KEY, JWT_OPTIONS } = require("../lib/constants");
 
 const signup = async (req, res, next) => {
   try {
@@ -29,7 +25,7 @@ const signup = async (req, res, next) => {
     const hashedPassword = await hash(password, 10);
     const id = USERS.length;
     const payload = { id, email };
-    const token = jwt.sign(payload, secretKey, options);
+    const token = jwt.sign(payload, JWT_SECRET_KEY, JWT_OPTIONS);
 
     USERS.push({ email, password: hashedPassword });
     // return back 200 status code to the client
@@ -75,7 +71,7 @@ const login = async (req, res, next) => {
     // Also send back a token (any random string will do for now)
     // If the password is not the same, return back 401 status code to the client
     const payload = { id: userExists.id, email: userExists.email };
-    const token = jwt.sign(payload, secretKey, options);
+    const token = jwt.sign(payload, JWT_SECRET_KEY, JWT_OPTIONS);
     const responseData = {
       email,
       token,
