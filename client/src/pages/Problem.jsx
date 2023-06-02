@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Button from "../components/Button";
-import { get, post } from "../lib/utils";
+import { get, getStatusColor, post } from "../lib/utils";
 import ProblemDescription from "../components/ProblemDescription";
 import TabButton from "../components/TabButton";
 import ProblemSubmission from "../components/ProblemSubmission";
@@ -46,14 +46,16 @@ const Problem = () => {
       code,
       language,
     });
-    const responseJson = await response.json();
     if (response.status === 401) {
       alert("Please login to view submissions");
       setSubmissions([]);
       return;
     }
-    alert(responseJson.data.status);
-    getSumbissions();
+    await getSumbissions();
+    setShowDescription(false)
+    setTimeout(() => {
+      getSumbissions();
+    }, 3000);
   };
 
   useEffect(() => {
@@ -89,14 +91,16 @@ const Problem = () => {
           )}
         </div>
 
-        {selectedSubmission && (
-          <div className="bg-black text-white p-4 rounded-md max-h-40 overflow-auto">
-            <h1 className="font-bold text-xs">OUTPUT : </h1>
-            <p style={{ whiteSpace: "pre-wrap" }} className="text-xs">
-              {selectedSubmission.output}
-            </p>
-          </div>
-        )}
+        <div className="bg-black text-white p-4 rounded-md h-40 overflow-auto">
+          <h1 className="font-bold text-xs">OUTPUT : </h1>
+          <p
+            style={{ whiteSpace: "pre-wrap" }}
+            className={"text-xs " + getStatusColor(selectedSubmission?.status)}
+          >
+            {selectedSubmission?.output ??
+              "Click on a submission to view output"}
+          </p>
+        </div>
       </div>
 
       <div className="rounded-md bg-white col-span-2 p-4 flex flex-col gap-4">

@@ -1,15 +1,7 @@
 import React from "react";
+import { getStatusColor } from '../lib/utils';
 
 const ProblemSubmission = ({ submissions, setCode, setSelectedSubmission }) => {
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "Accepted":
-        return "text-green-500";
-      default:
-        return "text-red-500";
-    }
-  };
-
   const onClick = (submission) => () => {
     setCode(submission.code);
     setSelectedSubmission(submission);

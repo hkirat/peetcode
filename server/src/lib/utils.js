@@ -50,12 +50,12 @@ const receiveMessageFromQueue = (queue, callback) => {
   });
 };
 
-const handleSubmissionFromQueue = (msg) => {
+const handleSubmissionFromQueue = async (msg) => {
   console.log("📩 Received %s", msg.content.toString());
   const submission = JSON.parse(msg.content.toString());
   const timeout = 10000;
 
-  executeCode(submission);
+  await executeCode(submission);
 };
 
 const executeCode = async (submission) => {
@@ -79,6 +79,7 @@ const executeCode = async (submission) => {
     image: "my-app:v1.0",
     HostConfig: {
       Binds: [`${filePath}:/app/code.cpp`, `${outputFile}:/app/output.txt`],
+      AutoRemove: true,
     },
   };
 
@@ -91,19 +92,18 @@ const executeCode = async (submission) => {
   const executionTimeout = 2000;
 
   const waitPromise = container.wait();
-
+  let timeoutId;
   const timeoutPromise = new Promise((resolve, reject) => {
-    setTimeout(() => {
+    timeoutId = setTimeout(() => {
+      console.log(`🕑 Execution timed out for container ${container.id} `);
       reject("Execution timed out");
     }, executionTimeout);
   });
 
   await Promise.race([waitPromise, timeoutPromise])
-    .then(async () => {
+    .then(() => {
       console.log("🐳🐳🐳🐳🐳🐳🐳🐳🐳🐳🐳🐳");
-
-      await container.remove();
-      console.log("🐳 Container removed successfully!");
+      clearTimeout(timeoutId);
 
       const jsonString = fs.readFileSync(outputFile, "utf8");
       console.log("📤 Output file read successfully!");
@@ -111,14 +111,10 @@ const executeCode = async (submission) => {
       const result = JSON.parse(jsonString);
       checkCodeResult(result, submission);
     })
-    .catch(async (err) => {
+    .catch((err) => {
       console.log("Time Limit Exceeded", err);
 
-      await container.stop();
-      console.log("🐳 Container stopped successfully!");
-
-      await container.remove();
-      console.log("🐳 Container removed successfully!");
+      container.stop((err, data) => console.log("🐳 Container stopped!"));
 
       checkCodeResult(
         { success: false, errorType: "Time Limit Exceeded", output: "TLE" },

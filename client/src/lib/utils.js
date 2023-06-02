@@ -38,3 +38,22 @@ export const getTokenCookie = () => {
   }
   return "";
 };
+
+export const getStatusColor = (status) => {
+  switch (status) {
+    case "Accepted":
+      return "text-green-500";
+    case "pending":
+      return "text-yellow-500";
+    case "Wrong Answer":
+      return "text-red-500";
+    case "Time Limit Exceeded":
+      return "text-red-500";
+    case "Compilation Error":
+      return "text-red-500";
+    case "Runtime Error":
+      return "text-red-500";
+    default:
+      return "text-gray-300";
+  }
+};
