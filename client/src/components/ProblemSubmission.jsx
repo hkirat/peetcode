@@ -1,6 +1,6 @@
 import React from "react";
 
-const ProblemSubmission = ({ submissions, setCode }) => {
+const ProblemSubmission = ({ submissions, setCode, setSelectedSubmission }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case "Accepted":
@@ -10,9 +10,9 @@ const ProblemSubmission = ({ submissions, setCode }) => {
     }
   };
 
-  const onClick = (code) => () => {
-    console.log(code)
-    setCode(code);
+  const onClick = (submission) => () => {
+    setCode(submission.code);
+    setSelectedSubmission(submission);
   };
 
   return (
@@ -20,7 +20,7 @@ const ProblemSubmission = ({ submissions, setCode }) => {
       {submissions.map((submission, index) => (
         <div
           key={index}
-          onClick={onClick(submission.code)}
+          onClick={onClick(submission)}
           className="p-4 odd:bg-white even:bg-slate-50 hover:bg-slate-100 cursor-pointer flex gap-16 items-center"
         >
           <div>

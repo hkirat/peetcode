@@ -5,7 +5,7 @@ const ProblemDescription = ({problem}) => {
     <>
       <h1 className="text-xl font-bold">{problem.title}</h1>
       <p className="text-sm py-2">{problem.description}</p>
-      <h1 className="font-semibold py-2">Examples</h1>
+      <h1 className="font-semibold py-2">Testcases</h1>
       {problem.testCases.map((testcase, index) => (
         <div key={index} className="p-4 my-2 bg-slate-100 rounded-md text-sm">
           <span className="font-bold py-2">Input : </span>
