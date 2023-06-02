@@ -21,8 +21,8 @@ const QUESTIONS = [
     acceptance: "92%",
     testCases: [
       {
-        input: "'hello'",
-        output: "'olleh'",
+        input: "hello",
+        output: "olleh",
       },
     ],
   },
@@ -35,11 +35,11 @@ const QUESTIONS = [
     acceptance: "81%",
     testCases: [
       {
-        input: "'radar'",
+        input: "radar",
         output: "true",
       },
       {
-        input: "'openai'",
+        input: "openai",
         output: "false",
       },
     ],
@@ -48,21 +48,21 @@ const QUESTIONS = [
     id: 4,
     title: "FizzBuzz",
     description:
-      "Write a program that prints the numbers from 1 to 100. But for multiples of three, print 'Fizz' instead of the number, and for the multiples of five, print 'Buzz'. For numbers which are multiples of both three and five, print 'FizzBuzz'.",
+      "Write a program that prints the numbers from 1 to 100. But for multiples of three, print Fizz instead of the number, and for the multiples of five, print Buzz. For numbers which are multiples of both three and five, print FizzBuzz.",
     difficulty: "Easy",
     acceptance: "97%",
     testCases: [
       {
         input: "15",
-        output: "'FizzBuzz'",
+        output: "FizzBuzz",
       },
       {
         input: "5",
-        output: "'Buzz'",
+        output: "Buzz",
       },
       {
         input: "3",
-        output: "'Fizz'",
+        output: "Fizz",
       },
     ],
   },
@@ -111,11 +111,11 @@ const QUESTIONS = [
     acceptance: "82%",
     testCases: [
       {
-        input: "'listen', 'silent'",
+        input: "listen, silent",
         output: "true",
       },
       {
-        input: "'openai', 'aiopen'",
+        input: "openai, aiopen",
         output: "false",
       },
     ],
@@ -219,12 +219,12 @@ const QUESTIONS = [
     acceptance: "77%",
     testCases: [
       {
-        input: "'Hello World'",
-        output: "'World Hello'",
+        input: "Hello World",
+        output: "World Hello",
       },
       {
-        input: "'OpenAI is awesome'",
-        output: "'awesome is OpenAI'",
+        input: "OpenAI is awesome",
+        output: "awesome is OpenAI",
       },
     ],
   },
