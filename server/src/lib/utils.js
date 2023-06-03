@@ -1,8 +1,9 @@
-const { RABBIT_MQ_PORT, submissionFolder } = require("./constants");
+const { RABBIT_MQ_PORT, submissionDir } = require("./constants");
 const amqp = require("amqplib/callback_api");
 const Docker = require("dockerode");
 const fs = require("fs");
 const { SUBMISSION, QUESTIONS } = require("../database/data");
+const path = require('path');
 
 const docker = new Docker();
 
@@ -59,8 +60,9 @@ const handleSubmissionFromQueue = async (msg) => {
 };
 
 const executeCode = async (submission) => {
-  const filePath = `${submissionFolder}submission-${submission.id}.cpp`;
-  const outputFile = `${submissionFolder}output-${submission.id}.txt`;
+  fs.mkdirSync(submissionDir, { recursive: true });
+  const filePath = path.join(submissionDir, `code-${submission.id}.cpp`);
+  const outputFile = path.join(submissionDir, `output-${submission.id}.txt`);
   fs.createWriteStream(outputFile).end();
   const writeStream = fs.createWriteStream(filePath);
 
