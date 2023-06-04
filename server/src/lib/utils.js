@@ -78,7 +78,7 @@ const executeCode = async (submission) => {
   });
 
   const containerConfig = {
-    image: "my-app:v1.0",
+    image: "jassi16/code-runner",
     HostConfig: {
       Binds: [`${filePath}:/app/code.cpp`, `${outputFile}:/app/output.txt`],
       AutoRemove: true,
