@@ -7,7 +7,9 @@ const getSubmissionsOfProblem = async (req, res) => {
   // return the users submissions for this problem
   const problemId = Number.parseInt(req.params.id);
   const submissions = SUBMISSION.filter(
-    (submission) => submission.problemId === problemId
+    (submission) =>
+      submission.problemId === problemId &&
+      submission.submittedBy === req.user.id
   ).sort((a, b) => b.submittedAt - a.submittedAt);
 
   res.customJson(submissions, "Submissions fetched successfully", 200);

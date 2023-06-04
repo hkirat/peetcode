@@ -13,6 +13,7 @@ const {
   receiveMessageFromQueue,
   handleSubmissionFromQueue,
 } = require("./src/lib/utils");
+const authMiddleware = require("./src/middlewares/auth.middleware");
 const port = 3001;
 
 app.use(cors());
@@ -21,7 +22,7 @@ app.use(loggingMiddleware);
 app.use(responseHandler);
 
 app.use("/", authRouter);
-app.use("/submissions", submissionRouter);
+app.use("/submissions", authMiddleware, submissionRouter);
 app.use("/questions", questionRouter);
 
 app.use(errorHandler);

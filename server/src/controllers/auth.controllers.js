@@ -27,7 +27,7 @@ const signup = async (req, res, next) => {
     const payload = { id, email };
     const token = jwt.sign(payload, JWT_SECRET_KEY, JWT_OPTIONS);
 
-    USERS.push({ email, password: hashedPassword });
+    USERS.push({ id, email, password: hashedPassword });
     // return back 200 status code to the client
     const responseData = {
       id,
@@ -71,6 +71,7 @@ const login = async (req, res, next) => {
     // Also send back a token (any random string will do for now)
     // If the password is not the same, return back 401 status code to the client
     const payload = { id: userExists.id, email: userExists.email };
+    console.log(payload);
     const token = jwt.sign(payload, JWT_SECRET_KEY, JWT_OPTIONS);
     const responseData = {
       email,
