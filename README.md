@@ -2,6 +2,13 @@
 
 This monorepo contains both the client and server components of the Code Runner project. The client folder uses Vite React.js for the frontend, while the server folder uses Node.js for the backend. This project allows you to run C++ code in a containerized manner.
 
+## Demo
+
+
+https://github.com/jassi-singh/peetcode/assets/54185836/9fd4ea9d-5426-4ca9-b2cc-ab6f34a7760d
+
+
+
 ## Prerequisites
 
 Before running this project, please ensure that you have the following dependencies installed:
