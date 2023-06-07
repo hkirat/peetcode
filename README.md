@@ -1,7 +1,7 @@
-## Peetcode
-It's an online algorithmic problem solving platform. Built as a joke during the full stack assignments by Harkirat Singh.
-No intention of building this into a business.
+PEETCODE!
+I have connected the frontend and backend i made here: https://github.com/oblionC/react-assignment and https://github.com/oblionC/full-stack-assignment to make a full fledged working website. 
 
-If you would like to win an Airpods though, feel free to go through the third part and build the bounty described in the video
-
-Demo: https://peetcode.com
+To run, 
+1) Install all the dependecies. The backend uses express and the frontend uses react.
+2) Run nodemon index.js in the backend file.
+3) Run npm run dev in the frontend file.
