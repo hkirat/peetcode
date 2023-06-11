@@ -3,28 +3,38 @@ import {Link} from 'react-router-dom'
 
 import "./AllProblems.css"
 import {backendUrl} from "../../constants.js";
+import Loader from "../../Constants/Loader/Loader.jsx";
 
 const AllProblemsPage = () => {
     const [problems, setProblems] = useState([]);
+    const [problemsFetched, setProblemsFetched] = useState(false)
 
     const init = async () => {
         const response = await fetch(`${backendUrl}/problems`, {
             method: "GET",
         });
 
-        const json = await response.json();
-        setProblems(json.problems);
+        await response
+            .json()
+            .then((json) => {
+                setProblems(json.problems);
+                setProblemsFetched(true)
+            })
+            .catch((e) => {
+                console.log("error", e, response)
+            });
+
     }
 
     useEffect(() => {
         init()
+        console.log("initial load", problems)
     }, []);
 
-    return (
-        <div id="allproblems">
-            <table>
+    function renderProblemTable() {
+        if (problemsFetched) {
+            return (
                 <tbody>
-
                 <tr>
                     <th>Title</th>
                     <th>Difficulty</th>
@@ -32,7 +42,7 @@ const AllProblemsPage = () => {
                 </tr>
 
                 {problems.map((prob, index) => (
-                    <tr>
+                    <tr key={index}>
                         <Link to={`/problems/:${prob.problemId}`}>
                             <td>{prob.title}</td>
                         </Link>
@@ -42,6 +52,16 @@ const AllProblemsPage = () => {
                 ))}
 
                 </tbody>
+            )
+        }
+
+        return (<Loader/>)
+    }
+
+    return (
+        <div id="allproblems">
+            <table>
+                {renderProblemTable()}
             </table>
         </div>
     )
