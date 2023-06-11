@@ -4,6 +4,32 @@
     align-items: flex-start;
 }
 
+.tab {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.5em 0.5em 0 0;
+    margin: 0;
+    padding: 1.5em 1em;
+}
+
+.tab.inactive {
+    color: grey;
+    font-weight: lighter;
+}
+
+.tab.active {
+    border-bottom: 2px solid black;
+    color: black;
+    font-weight: bolder;
+}
+
+.submission.wrong.answer {
+    color: red;
+}
+
+.submission.accepted {
+    color: green;
+}
+
 .ques , .code {
     width: 50%;
     min-height: 65vh;
